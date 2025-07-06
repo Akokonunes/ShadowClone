@@ -172,6 +172,49 @@ CopyEdit
 
 ## **9. Troubleshooting Checklist**
 
+
+## 🐞 **Troubleshooting: Nuclei Fails with Exit Code 1 / No Templates Found**
+
+### **Problem**
+
+When running Nuclei via ShadowClone with a custom template directory, you see:
+
+
+`Encountered a bad command exit code! Command:  '/usr/local/bin/nuclei -l /tmp/infile -duc -t /nuclei-templates/my-templates'  Exit code: 1  Stdout: already printed Stderr: already printed` 
+
+### **Cause**
+
+This error happens because **Nuclei requires the template directory path to end with a `/`**.  
+If you leave off the trailing slash, Nuclei may not find any templates and will exit with an error.
+
+----------
+
+### **Solution**
+
+**Always include the trailing slash (`/`) at the end of the template directory path in your command!**
+
+**Correct:**
+
+`python3 shadowclone.py -i part_00 --split 800 -o output00 -c "/usr/local/bin/nuclei -l {INPUT} -duc -t /nuclei-templates/my-templates/"` 
+
+**Incorrect (will fail):**
+
+`python3 shadowclone.py -i part_00 --split 800 -o output00 -c "/usr/local/bin/nuclei -l {INPUT} -duc -t /nuclei-templates/my-templates"` 
+
+----------
+
+### **Extra Tips**
+
+-   If you get `Exit code: 1` and your templates exist, check for the missing `/`.
+    
+-   You can verify your templates are available by running (inside your image):
+    
+
+```
+docker run -it --entrypoint /bin/bash sc-runtime
+ls /nuclei-templates/my-templates
+```
+
 **Problem**
 
 **Solution**
